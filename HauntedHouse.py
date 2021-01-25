@@ -6,7 +6,8 @@ UP = "UP"
 DOWN = "DOWN"
 NORTHWEST = "NORTH WEST"
 
-
+FIRE = 0
+DEATH = False
 ROOMS = {0: ["PORCH", "you stand", True],
          1: ["ENTRANCE HALL", "entrance", True],
          2: ["DINING HALL", "eat", True],
@@ -96,6 +97,8 @@ OBJECT_LOCATIONS = {0: VOID_LOCATION,
                     9: 20,
                     10: 3
                     }
+OBJECT_LOCATIONS[2] = 0
+OBJECT_LOCATIONS[3] = 0
 
 INVENTORY_LOCATION = 7
 
@@ -115,6 +118,7 @@ def prtRoom(roomID):
     directions = CONNECTIONS.get(roomID)
 
 def use(objectID, currentRoomID):
+    global FIRE
     inventory = objectsAtLocation(INVENTORY_LOCATION)
     success = False
     name, size, weight = OBJECTS[objectID]
@@ -132,15 +136,34 @@ def use(objectID, currentRoomID):
             OBJECT_LOCATIONS[2] = VOID_LOCATION
             OBJECT_LOCATIONS[0] = INVENTORY_LOCATION
             print("the match lit your torch!")
+            FIRE = 5
             success = True
 
     if success is False:
         x=input()
         print("nothing happend")
 
+def fire(currentRoomID):
+    global FIRE, DEATH
+    FIRE -= 1
+    if FIRE < -1:
+        FIRE = -1
 
+    if FIRE < 0:
+        OBJECT_LOCATIONS[0] = VOID_LOCATION
+        OBJECT_LOCATIONS[2] = INVENTORY_LOCATION
+    else:
+        OBJECT_LOCATIONS[0] = INVENTORY_LOCATION
+        OBJECT_LOCATIONS[2] = VOID_LOCATION
+    name, description, isLit = ROOMS[currentRoomID]
+    if FIRE <= 0 and isLit is False:
+        print("your torch extingushed and the ghosts of the dark killed you")
+        x=input()
+        print("YOU DIED")
+        DEATH = True
 
 def inventory(currentRoomID):
+    global FIRE
     objects = objectsAtLocation(INVENTORY_LOCATION)
     valid = False
     while valid is False:
@@ -194,6 +217,7 @@ def inventory(currentRoomID):
                 for i, k in enumerate(objects):
                     name, size, weight = OBJECTS[k]
                     print(f"{i + 1}) {name}: {size} unit(s) big, {weight} unit(s) heavy")
+
                 x = input()
 
             else:
@@ -260,12 +284,17 @@ def move(roomID):
 
 
 def main():
+
     currentRoomID = 0
-    while True:
+    loop = True
+    while DEATH is False:
         prtRoom(currentRoomID)
         valid = False
         while valid is False:
-            ans = int(input("What woud you like to do?\n1) Move\n2) Objects\n3) Bag\n"))
+            fire(currentRoomID)
+            if DEATH is True:
+                break
+            ans = int(input("What would you like to do?\n1) Move\n2) Objects\n3) Bag\n"))
             if ans == 1:
                 valid = True
 
@@ -277,12 +306,14 @@ def main():
                 else:
                     print("this room is dark and scary")
                     x = input()
+
             elif ans == 2:
                 valid = True
                 objects(currentRoomID)
             elif ans == 3:
                 valid = True
                 inventory(currentRoomID)
-
+        name, description, isLit = ROOMS[currentRoomID]
 
 main()
+

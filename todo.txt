@@ -1,6 +1,5 @@
 
 
 
-Puzzles
-- light torch
 - objects as containers e.g. drawers
+- values and score system
