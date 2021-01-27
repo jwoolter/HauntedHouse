@@ -116,6 +116,8 @@ def objectsAtLocation(roomID):
 def prtRoom(roomID):
     name, description, isLit = ROOMS[roomID]
     directions = CONNECTIONS.get(roomID)
+    print(f"{name}\n{description}")
+
 
 def use(objectID, currentRoomID):
     global FIRE
@@ -126,7 +128,7 @@ def use(objectID, currentRoomID):
 
     if name == "UnLit Torch":
         print("you wave an un lit torch")
-        x=input()
+        x = input()
         print("it does nothing")
         success = True
     elif name == "Matches":
@@ -140,8 +142,9 @@ def use(objectID, currentRoomID):
             success = True
 
     if success is False:
-        x=input()
+        x = input()
         print("nothing happend")
+
 
 def fire(currentRoomID):
     global FIRE, DEATH
@@ -158,9 +161,10 @@ def fire(currentRoomID):
     name, description, isLit = ROOMS[currentRoomID]
     if FIRE <= 0 and isLit is False:
         print("your torch extingushed and the ghosts of the dark killed you")
-        x=input()
+        x = input()
         print("YOU DIED")
         DEATH = True
+
 
 def inventory(currentRoomID):
     global FIRE
@@ -168,7 +172,11 @@ def inventory(currentRoomID):
     valid = False
     while valid is False:
         print("What would you like to do with your items?\n1) USE\n2) DROP\n3) VIEW\n4) EXIT")
-        ans = int(input(""))
+        ans = input("")
+        try:
+            ans = int(ans)
+        except:
+            print(f"{ans} is not a number plaese type the numbers not their answers")
         if ans == 1:
             if len(objects) >= 1:
                 valid = False
@@ -177,7 +185,11 @@ def inventory(currentRoomID):
                     for i, k in enumerate(objects):
                         name, size, weight = OBJECTS[k]
                         print(f"{i + 1}) {name}: {size} unit(s) big, {weight} unit(s) heavy")
-                    ans = int(input(""))
+                    ans = input("")
+                    try:
+                        ans = int(ans)
+                    except:
+                        print(f"{ans} is not a number plaese type the numbers not their answers")
                     if ans > 0 and ans <= len(objects):
                         selectedObject = objects[ans - 1]
                         use(selectedObject, currentRoomID)
@@ -195,7 +207,11 @@ def inventory(currentRoomID):
                     for i, k in enumerate(objects):
                         name, size, weight = OBJECTS[k]
                         print(f"{i + 1}) {name}: {size} unit(s) big, {weight} unit(s) heavy")
-                    ans = int(input(""))
+                    ans = input("")
+                    try:
+                        ans = int(ans)
+                    except:
+                        print(f"{ans} is not a number plaese type the numbers not their answers")
                     if ans > 0 and ans <= len(objects):
                         selectedObject = objects[ans - 1]
                         name, size, weight = OBJECTS[selectedObject]
@@ -205,7 +221,7 @@ def inventory(currentRoomID):
                         valid = True
                     else:
                         print("that is not the answer you are looking for")
-                        x=input()
+                        x = input()
 
 
 
@@ -226,6 +242,7 @@ def inventory(currentRoomID):
         else:
             valid = True
 
+
 def objects(roomID):
     objects = objectsAtLocation(roomID)
     if len(objects) >= 1:
@@ -233,7 +250,11 @@ def objects(roomID):
         for i, k in enumerate(objects):
             name, size, weight = OBJECTS[k]
             print(f"{i + 1}) {name}")
-        ans = int(input(""))
+        ans = input("")
+        try:
+            ans = int(ans)
+        except:
+            print(f"{ans} is not a number plaese type the numbers not their answers")
         selectedObject = objects[ans - 1]
         name, size, weight = OBJECTS[selectedObject]
         print(f"you pick up {name}")
@@ -262,7 +283,14 @@ def move(roomID):
 
         valid = False
         while valid is False:
-            ans = int(input(""))
+            ans = input("")
+
+            try:
+                ans = int(ans)
+
+            except:
+                print(f"{ans} is not a number plaese type the numbers not their answers")
+
             if ans <= len(choices) and ans >= 1:
                 valid = True
             elif hasTorch is False and isLit is True:
@@ -284,7 +312,6 @@ def move(roomID):
 
 
 def main():
-
     currentRoomID = 0
     loop = True
     while DEATH is False:
@@ -294,7 +321,11 @@ def main():
             fire(currentRoomID)
             if DEATH is True:
                 break
-            ans = int(input("What would you like to do?\n1) Move\n2) Objects\n3) Bag\n"))
+            ans = input("What would you like to do?\n1) Move\n2) Objects\n3) Bag\n")
+            try:
+                ans = int(ans)
+            except:
+                print(f"{ans} is not a number plaese type the numbers not their answers")
             if ans == 1:
                 valid = True
 
@@ -315,5 +346,5 @@ def main():
                 inventory(currentRoomID)
         name, description, isLit = ROOMS[currentRoomID]
 
-main()
 
+main()
