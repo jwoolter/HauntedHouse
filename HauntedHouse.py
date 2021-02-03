@@ -8,6 +8,8 @@ NORTHWEST = "NORTH WEST"
 
 FIRE = 0
 DEATH = False
+
+
 ROOMS = {0: ["PORCH", "you stand", True],
          1: ["ENTRANCE HALL", "entrance", True],
          2: ["DINING HALL", "eat", True],
@@ -66,18 +68,18 @@ CONNECTIONS = {0: {NORTH: [1, False]},
                26: {SOUTH: [24, True]}
                }
 
-# name, size, weight
-OBJECTS = {0: ["Lit Torch", 10, 2],
-           1: ["Key", 3, 1],
-           2: ["Unlit Torch", 10, 2],
-           3: ["Matches", 1, 1],
-           4: ["Bronze Coin", 1, 1],
-           5: ["Silver Coin", 1, 1],
-           6: ["Gold Coin", 1, 1],
-           7: ["Chalice", 5, 3],
-           8: ["Matches", 1, 1],
-           9: ["Matches", 1, 1],
-           10: ["Matches", 1, 1],
+# name, size, weight, value
+OBJECTS = {0: ["Lit Torch", 10, 2, 1],
+           1: ["Key", 3, 1, 5],
+           2: ["Unlit Torch", 10, 2, 1],
+           3: ["Matches", 1, 1, 1],
+           4: ["Bronze Coin", 1, 1, 5],
+           5: ["Silver Coin", 1, 1, 10],
+           6: ["Gold Coin", 1, 1, 25],
+           7: ["Chalice", 5, 3, 50],
+           8: ["Matches", 1, 1, 1],
+           9: ["Matches", 1, 1, 1],
+           10: ["Matches", 1, 1, 1],
 
            }
 
@@ -97,12 +99,10 @@ OBJECT_LOCATIONS = {0: VOID_LOCATION,
                     9: 20,
                     10: 3
                     }
-OBJECT_LOCATIONS[2] = 0
-OBJECT_LOCATIONS[3] = 0
+#OBJECT_LOCATIONS[2] = 0
+#OBJECT_LOCATIONS[3] = 0
 
-INVENTORY_LOCATION = 7
 
-VOID_LOCATION = 27
 
 
 def objectsAtLocation(roomID):
@@ -110,7 +110,7 @@ def objectsAtLocation(roomID):
     for k, v in OBJECT_LOCATIONS.items():
         if v == roomID:
             found.append(k)
-    return (found)
+    return found
 
 
 def prtRoom(roomID):
@@ -118,6 +118,25 @@ def prtRoom(roomID):
     directions = CONNECTIONS.get(roomID)
     print(f"{name}\n{description}")
 
+def bag():
+    totalSize = 0
+    totalWeight = 0
+    totalValue = 0
+    inventory = objectsAtLocation(INVENTORY_LOCATION)
+    for objectID in inventory:
+        name, size, weight, value = OBJECTS[objectID]
+        totalSize += size
+        totalWeight += weight
+        totalValue += value
+
+    return totalSize,totalWeight,totalValue
+
+
+totalSize, totalWeight, totalValue = bag()
+SIZECAPACITY = 100
+WEIGHTCAPACITY = 100
+SPACE = SIZECAPACITY - totalSize
+WEIGHT = WEIGHTCAPACITY - totalWeight
 
 def use(objectID, currentRoomID):
     global FIRE
@@ -176,15 +195,15 @@ def inventory(currentRoomID):
         try:
             ans = int(ans)
         except:
-            print(f"{ans} is not a number plaese type the numbers not their answers")
+            print(f"{ans} is not a number please type the numbers not their answers")
         if ans == 1:
             if len(objects) >= 1:
                 valid = False
                 while valid is False:
                     print("What would you like to use?")
                     for i, k in enumerate(objects):
-                        name, size, weight = OBJECTS[k]
-                        print(f"{i + 1}) {name}: {size} unit(s) big, {weight} unit(s) heavy")
+                        name, size, weight, value = OBJECTS[k]
+                        print(f"{i + 1}) {name}: {size} unit(s) big, {weight} unit(s) heavy, worth £{value}")
                     ans = input("")
                     try:
                         ans = int(ans)
@@ -205,8 +224,8 @@ def inventory(currentRoomID):
                 while valid is False:
                     print("What would you like to drop?")
                     for i, k in enumerate(objects):
-                        name, size, weight = OBJECTS[k]
-                        print(f"{i + 1}) {name}: {size} unit(s) big, {weight} unit(s) heavy")
+                        name, size, weight, value = OBJECTS[k]
+                        print(f"{i + 1}) {name}: {size} unit(s) big, {weight} unit(s) heavy, worth £{value}")
                     ans = input("")
                     try:
                         ans = int(ans)
@@ -214,7 +233,7 @@ def inventory(currentRoomID):
                         print(f"{ans} is not a number plaese type the numbers not their answers")
                     if ans > 0 and ans <= len(objects):
                         selectedObject = objects[ans - 1]
-                        name, size, weight = OBJECTS[selectedObject]
+                        name, size, weight, value = OBJECTS[selectedObject]
                         OBJECT_LOCATIONS[selectedObject] = currentRoomID
                         print(f"you dropped {name}")
                         x = input()
@@ -231,9 +250,11 @@ def inventory(currentRoomID):
             if len(objects) >= 1:
                 print("This is your stuff")
                 for i, k in enumerate(objects):
-                    name, size, weight = OBJECTS[k]
-                    print(f"{i + 1}) {name}: {size} unit(s) big, {weight} unit(s) heavy")
+                    name, size, weight, value = OBJECTS[k]
+                    print(f"{i + 1}) {name}: {size} unit(s) big, {weight} unit(s) heavy, worth £{value}")
 
+                totalSize, totalWeight, totalValue = bag()
+                print(f"Space Left: {SPACE}\nWeight Spare: {WEIGHT}\nTotal Value: £{totalValue}")
                 x = input()
 
             else:
@@ -248,15 +269,15 @@ def objects(roomID):
     if len(objects) >= 1:
         print("what object would you like to pick up?")
         for i, k in enumerate(objects):
-            name, size, weight = OBJECTS[k]
+            name, size, weight, value = OBJECTS[k]
             print(f"{i + 1}) {name}")
         ans = input("")
         try:
             ans = int(ans)
         except:
-            print(f"{ans} is not a number plaese type the numbers not their answers")
+            print(f"{ans} is not a number please type the numbers not their answers")
         selectedObject = objects[ans - 1]
-        name, size, weight = OBJECTS[selectedObject]
+        name, size, weight, value = OBJECTS[selectedObject]
         print(f"you pick up {name}")
         OBJECT_LOCATIONS[selectedObject] = INVENTORY_LOCATION
         x = input()
@@ -319,6 +340,7 @@ def main():
         valid = False
         while valid is False:
             fire(currentRoomID)
+            bag()
             if DEATH is True:
                 break
             ans = input("What would you like to do?\n1) Move\n2) Objects\n3) Bag\n")
