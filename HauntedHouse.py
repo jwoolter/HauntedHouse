@@ -10,6 +10,7 @@ FIRE = 0
 DEATH = False
 
 
+
 ROOMS = {0: ["PORCH", "you stand", True],
          1: ["ENTRANCE HALL", "entrance", True],
          2: ["DINING HALL", "eat", True],
@@ -83,9 +84,9 @@ OBJECTS = {0: ["Lit Torch", 10, 2, 1],
 
            }
 
-INVENTORY_LOCATION = 7
+INVENTORY_LOCATION = 1103
 
-VOID_LOCATION = 27
+VOID_LOCATION = 2006
 
 OBJECT_LOCATIONS = {0: VOID_LOCATION,
                     1: 11,
@@ -119,7 +120,7 @@ def prtRoom(roomID):
     print(f"{name}\n{description}")
 
 def bag():
-    totalSize = 0
+    totalSize = 95
     totalWeight = 0
     totalValue = 0
     inventory = objectsAtLocation(INVENTORY_LOCATION)
@@ -142,7 +143,7 @@ def use(objectID, currentRoomID):
     global FIRE
     inventory = objectsAtLocation(INVENTORY_LOCATION)
     success = False
-    name, size, weight = OBJECTS[objectID]
+    name, size, weight, value = OBJECTS[objectID]
     print(f"you try to use {name}")
 
     if name == "UnLit Torch":
@@ -167,13 +168,15 @@ def use(objectID, currentRoomID):
 
 def fire(currentRoomID):
     global FIRE, DEATH
+    hasTorch = OBJECT_LOCATIONS[0] == INVENTORY_LOCATION
     FIRE -= 1
     if FIRE < -1:
         FIRE = -1
 
     if FIRE < 0:
-        OBJECT_LOCATIONS[0] = VOID_LOCATION
-        OBJECT_LOCATIONS[2] = INVENTORY_LOCATION
+        if hasTorch is True:
+            OBJECT_LOCATIONS[0] = VOID_LOCATION
+            OBJECT_LOCATIONS[2] = INVENTORY_LOCATION
     else:
         OBJECT_LOCATIONS[0] = INVENTORY_LOCATION
         OBJECT_LOCATIONS[2] = VOID_LOCATION
@@ -187,9 +190,10 @@ def fire(currentRoomID):
 
 def inventory(currentRoomID):
     global FIRE
-    objects = objectsAtLocation(INVENTORY_LOCATION)
+
     valid = False
     while valid is False:
+        objects = objectsAtLocation(INVENTORY_LOCATION)
         print("What would you like to do with your items?\n1) USE\n2) DROP\n3) VIEW\n4) EXIT")
         ans = input("")
         try:
@@ -207,15 +211,15 @@ def inventory(currentRoomID):
                     ans = input("")
                     try:
                         ans = int(ans)
+
+                        if ans > 0 and ans <= len(objects):
+                            selectedObject = objects[ans - 1]
+                            use(selectedObject, currentRoomID)
+
+                            x = input()
+                            valid = True
                     except:
                         print(f"{ans} is not a number plaese type the numbers not their answers")
-                    if ans > 0 and ans <= len(objects):
-                        selectedObject = objects[ans - 1]
-                        use(selectedObject, currentRoomID)
-
-                        x = input()
-                        valid = True
-
             else:
                 print("you have no stuff!")
         elif ans == 2:
@@ -229,19 +233,20 @@ def inventory(currentRoomID):
                     ans = input("")
                     try:
                         ans = int(ans)
-                    except:
-                        print(f"{ans} is not a number plaese type the numbers not their answers")
-                    if ans > 0 and ans <= len(objects):
-                        selectedObject = objects[ans - 1]
-                        name, size, weight, value = OBJECTS[selectedObject]
-                        OBJECT_LOCATIONS[selectedObject] = currentRoomID
-                        print(f"you dropped {name}")
-                        x = input()
-                        valid = True
-                    else:
-                        print("that is not the answer you are looking for")
-                        x = input()
 
+                        if ans > 0 and ans <= len(objects):
+                            selectedObject = objects[ans - 1]
+                            name, size, weight, value = OBJECTS[selectedObject]
+                            OBJECT_LOCATIONS[selectedObject] = currentRoomID
+                            print(f"you dropped {name}")
+                            x = input()
+                            valid = True
+                        else:
+                            print("that is not the answer you are looking for")
+                            x = input()
+                    except:
+                        print(f"{ans} is not a number please type the numbers not their answers")
+                        x = input()
 
 
             else:
@@ -254,33 +259,45 @@ def inventory(currentRoomID):
                     print(f"{i + 1}) {name}: {size} unit(s) big, {weight} unit(s) heavy, worth £{value}")
 
                 totalSize, totalWeight, totalValue = bag()
-                print(f"Space Left: {SPACE}\nWeight Spare: {WEIGHT}\nTotal Value: £{totalValue}")
+                print(f"Space Left: {SIZECAPACITY - totalSize}\nWeight Spare: {WEIGHTCAPACITY - totalWeight}\nTotal Value: £{totalValue}")
                 x = input()
 
             else:
                 print("you have no stuff!")
                 x = input()
-        else:
+        elif ans == 4:
             valid = True
 
 
 def objects(roomID):
     objects = objectsAtLocation(roomID)
     if len(objects) >= 1:
-        print("what object would you like to pick up?")
-        for i, k in enumerate(objects):
-            name, size, weight, value = OBJECTS[k]
-            print(f"{i + 1}) {name}")
-        ans = input("")
-        try:
-            ans = int(ans)
-        except:
-            print(f"{ans} is not a number please type the numbers not their answers")
-        selectedObject = objects[ans - 1]
-        name, size, weight, value = OBJECTS[selectedObject]
-        print(f"you pick up {name}")
-        OBJECT_LOCATIONS[selectedObject] = INVENTORY_LOCATION
-        x = input()
+        valid = False
+        while valid is False:
+            print("what object would you like to pick up?")
+            for i, k in enumerate(objects):
+                name, size, weight, value = OBJECTS[k]
+                print(f"{i + 1}) {name}")
+            ans = input("")
+            try:
+                ans = int(ans)
+                valid = True
+                selectedObject = objects[ans - 1]
+                name, size, weight, value = OBJECTS[selectedObject]
+                totalSize, totalWeight, totalValue = bag()
+
+                if totalSize + size > SIZECAPACITY:
+                    print("you don't have enough space to carry this")
+                    valid = False
+                elif totalWeight + weight > WEIGHTCAPACITY:
+                    print("you aren't strong enough to carry this")
+                    valid = False
+                else:
+                    print(f"you pick up {name}")
+                    OBJECT_LOCATIONS[selectedObject] = INVENTORY_LOCATION
+                x = input()
+            except:
+                print(f"{ans} is not a number please type the numbers not their answers")
     else:
         print("there are no object you can see at the moment")
         x = input()
@@ -293,31 +310,31 @@ def move(roomID):
     directions = CONNECTIONS.get(roomID)
     if directions is not None and isLit is True or hasTorch is True:
         choices = list(directions.keys())
-        print("Where would you like to go?")
-        for i, k in enumerate(choices):
-            destinationID, isLocked = directions[k]
-            name, description, isLit = ROOMS[destinationID]
-            if isLocked is False or hasKey is True:
-                print(f"{i + 1}) {k}: {name}")
-            elif isLocked is True:
-                print(f"{i + 1}) {k}: LOCKED")
+
 
         valid = False
         while valid is False:
+            print("Where would you like to go?")
+            for i, k in enumerate(choices):
+                destinationID, isLocked = directions[k]
+                name, description, isLit = ROOMS[destinationID]
+                if isLocked is False or hasKey is True:
+                    print(f"{i + 1}) {k}: {name}")
+                elif isLocked is True:
+                    print(f"{i + 1}) {k}: LOCKED")
             ans = input("")
 
             try:
                 ans = int(ans)
 
+                if ans <= len(choices) and ans >= 1:
+                    valid = True
+                elif hasTorch is False and isLit is False:
+                    print("that room is dark and scary")
+                else:
+                    print("that is not the answer you are looking for")
             except:
-                print(f"{ans} is not a number plaese type the numbers not their answers")
-
-            if ans <= len(choices) and ans >= 1:
-                valid = True
-            elif hasTorch is False and isLit is True:
-                print("that room is dark and scary")
-            else:
-                print("that is not the answer you are looking for")
+                print(f"{ans} is not a number please type the numbers not their answers")
         chosenDirection = choices[ans - 1]
         destination, isLocked = directions[chosenDirection]
         if isLocked is False or hasKey is True:
@@ -334,7 +351,7 @@ def move(roomID):
 
 def main():
     currentRoomID = 0
-    loop = True
+
     while DEATH is False:
         prtRoom(currentRoomID)
         valid = False
@@ -347,7 +364,7 @@ def main():
             try:
                 ans = int(ans)
             except:
-                print(f"{ans} is not a number plaese type the numbers not their answers")
+                print(f"{ans} is not a number please type the numbers not their answers")
             if ans == 1:
                 valid = True
 
