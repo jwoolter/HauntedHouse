@@ -278,26 +278,32 @@ def objects(roomID):
             for i, k in enumerate(objects):
                 name, size, weight, value = OBJECTS[k]
                 print(f"{i + 1}) {name}")
+            print(f"{len(objects) +1}) Cancel")
             ans = input("")
             try:
                 ans = int(ans)
-                valid = True
-                selectedObject = objects[ans - 1]
-                name, size, weight, value = OBJECTS[selectedObject]
-                totalSize, totalWeight, totalValue = bag()
+                if ans == len(objects) +1:
+                    valid = True
 
-                if totalSize + size > SIZECAPACITY:
-                    print("you don't have enough space to carry this")
-                    valid = False
-                elif totalWeight + weight > WEIGHTCAPACITY:
-                    print("you aren't strong enough to carry this")
-                    valid = False
                 else:
-                    print(f"you pick up {name}")
-                    OBJECT_LOCATIONS[selectedObject] = INVENTORY_LOCATION
-                x = input()
+                    valid = True
+                    selectedObject = objects[ans - 1]
+                    name, size, weight, value = OBJECTS[selectedObject]
+                    totalSize, totalWeight, totalValue = bag()
+
+                    if totalSize + size > SIZECAPACITY:
+                        print("you don't have enough space to carry this")
+                        valid = False
+                    elif totalWeight + weight > WEIGHTCAPACITY:
+                        print("you aren't strong enough to carry this")
+                        valid = False
+                    else:
+                        print(f"you pick up {name}")
+                        OBJECT_LOCATIONS[selectedObject] = INVENTORY_LOCATION
+                    x = input()
             except:
                 print(f"{ans} is not a number please type the numbers not their answers")
+
     else:
         print("there are no object you can see at the moment")
         x = input()
@@ -322,19 +328,25 @@ def move(roomID):
                     print(f"{i + 1}) {k}: {name}")
                 elif isLocked is True:
                     print(f"{i + 1}) {k}: LOCKED")
+            print(f"{len(directions) +1}) Cancel")
             ans = input("")
 
             try:
                 ans = int(ans)
-
-                if ans <= len(choices) and ans >= 1:
+                if ans == len(directions) +1:
                     valid = True
-                elif hasTorch is False and isLit is False:
-                    print("that room is dark and scary")
+
                 else:
-                    print("that is not the answer you are looking for")
+                    if ans <= len(choices) and ans >= 1:
+                        valid = True
+                    elif hasTorch is False and isLit is False:
+                        print("that room is dark and scary")
+                    else:
+                        print("that is not the answer you are looking for")
             except:
                 print(f"{ans} is not a number please type the numbers not their answers")
+        if ans == len(directions) +1:
+            chosenDirection = roomID
         chosenDirection = choices[ans - 1]
         destination, isLocked = directions[chosenDirection]
         if isLocked is False or hasKey is True:
