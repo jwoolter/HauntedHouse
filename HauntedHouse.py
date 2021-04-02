@@ -1,3 +1,5 @@
+import random
+
 NORTH = "NORTH"
 SOUTH = "SOUTH"
 EAST = "EAST"
@@ -9,7 +11,7 @@ NORTHWEST = "NORTH WEST"
 FIRE = 0
 DEATH = False
 
-
+#name, description, isLit
 
 ROOMS = {0: ["PORCH", "you stand", True],
          1: ["ENTRANCE HALL", "entrance", True],
@@ -40,7 +42,7 @@ ROOMS = {0: ["PORCH", "you stand", True],
          26: ["CELL", "lock", False],
 
          999: ["you win", "you win", True]}
-
+# direction, newLocation, isLocked?
 CONNECTIONS = {0: {NORTH: [1, False]},
                1: {NORTH: [6, False], EAST: [2, False], SOUTH: [0, False], WEST: [4, False]},
                2: {NORTH: [3, False], WEST: [1, False]},
@@ -81,14 +83,16 @@ OBJECTS = {0: ["Lit Torch", 10, 2, 1],
            8: ["Matches", 1, 1, 1],
            9: ["Matches", 1, 1, 1],
            10: ["Matches", 1, 1, 1],
+           11: ["random", 1, 1, 999],
+           12: ["old chair", 100, 100, 0],
 
            }
 
 INVENTORY_LOCATION = 1103
-
 VOID_LOCATION = 2006
 
 OBJECT_LOCATIONS = {0: VOID_LOCATION,
+
                     1: 11,
                     2: 17,
                     3: 4,
@@ -98,7 +102,9 @@ OBJECT_LOCATIONS = {0: VOID_LOCATION,
                     7: INVENTORY_LOCATION,
                     8: 14,
                     9: 20,
-                    10: 3
+                    10: 3,
+                    11: random.choice([0,1,2]),
+                    12: 0,
                     }
 #OBJECT_LOCATIONS[2] = 0
 #OBJECT_LOCATIONS[3] = 0
@@ -120,7 +126,7 @@ def prtRoom(roomID):
     print(f"{name}\n{description}")
 
 def bag():
-    totalSize = 95
+    totalSize = 0
     totalWeight = 0
     totalValue = 0
     inventory = objectsAtLocation(INVENTORY_LOCATION)
@@ -346,7 +352,8 @@ def move(roomID):
             except:
                 print(f"{ans} is not a number please type the numbers not their answers")
         if ans == len(directions) +1:
-            chosenDirection = roomID
+
+            return roomID
         chosenDirection = choices[ans - 1]
         destination, isLocked = directions[chosenDirection]
         if isLocked is False or hasKey is True:
@@ -354,16 +361,20 @@ def move(roomID):
         else:
             print("the door is locked")
             x = input()
-            return (roomID)
+            return roomID
 
     else:
         x = input()
-        return (roomID)
+        return roomID
 
+def end():
+    totalSize, totalWeight, totalValue = bag()
+    print(f'you sold the items you found in the house for {totalValue}')
 
 def main():
     currentRoomID = 0
-
+    turns = 0
+    moves = 0
     while DEATH is False:
         prtRoom(currentRoomID)
         valid = False
@@ -372,6 +383,7 @@ def main():
             bag()
             if DEATH is True:
                 break
+            print(moves)
             ans = input("What would you like to do?\n1) Move\n2) Objects\n3) Bag\n")
             try:
                 ans = int(ans)
@@ -385,6 +397,7 @@ def main():
                 hasTorch = OBJECT_LOCATIONS[0] == INVENTORY_LOCATION
                 if isLit is True or hasTorch is True:
                     currentRoomID = nextRoomID
+                    moves += 1
                 else:
                     print("this room is dark and scary")
                     x = input()
@@ -395,7 +408,12 @@ def main():
             elif ans == 3:
                 valid = True
                 inventory(currentRoomID)
-        name, description, isLit = ROOMS[currentRoomID]
+        if currentRoomID == 0 and moves > 0:
+            ans = int(input("do you want to leave the house?"))
+            if ans == 1:
+                print("you left the house")
 
-
+                break
+        turns += 1
+    end()
 main()

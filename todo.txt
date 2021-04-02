@@ -1,5 +1,12 @@
 
 
 
-- objects as containers e.g. drawers
 - values and score system
+- room descriptions
+-more "useless" objects (see obj 12)
+- end function to end game
+- possible maze
+- more uses for items
+-- items unlock secrets
+--- chalice unlocks maze???
+- random object locations using choice (see obj 11)
