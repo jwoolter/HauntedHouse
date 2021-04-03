@@ -1,11 +1,11 @@
 
 
 
-- values and score system
+
 - room descriptions
 -more "useless" objects (see obj 12)
-- end function to end game
-- possible maze
+
+- connect maxe to somewhere -- Garden/Cellar
 - more uses for items
 -- items unlock secrets
 --- chalice unlocks maze???

@@ -11,7 +11,7 @@ NORTHWEST = "NORTH WEST"
 FIRE = 0
 DEATH = False
 
-#name, description, isLit
+# name, description, isLit
 
 ROOMS = {0: ["PORCH", "you stand", True],
          1: ["ENTRANCE HALL", "entrance", True],
@@ -41,9 +41,18 @@ ROOMS = {0: ["PORCH", "you stand", True],
          25: ["WINE CELLAR", "drink", False],
          26: ["CELL", "lock", False],
 
+         101: ["Maze", "lost in a maze", True],
+         102: ["Maze", "lost in a maze", True],
+         103: ["Maze", "lost in a maze", True],
+         104: ["Maze", "lost in a maze", True],
+         105: ["Maze", "lost in a maze", True],
+         106: ["Maze", "lost in a maze", True],
+         107: ["Maze", "lost in a maze", True],
+         108: ["Maze", "you found the end", True],
+
          999: ["you win", "you win", True]}
 # direction, newLocation, isLocked?
-CONNECTIONS = {0: {NORTH: [1, False]},
+CONNECTIONS = {0: {NORTH: [1, False], DOWN: [101, False]},
                1: {NORTH: [6, False], EAST: [2, False], SOUTH: [0, False], WEST: [4, False]},
                2: {NORTH: [3, False], WEST: [1, False]},
                3: {SOUTH: [2, False], WEST: [5, True]},
@@ -68,7 +77,14 @@ CONNECTIONS = {0: {NORTH: [1, False]},
                23: {NORTH: [22, False], EAST: [25, False], WEST: [24, True]},
                24: {NORTH: [26, True], EAST: [23, True]},
                25: {EAST: [23, False]},
-               26: {SOUTH: [24, True]}
+               26: {SOUTH: [24, True]},
+               101: {NORTH: [105, False], EAST: [102, False], SOUTH: [104, False]},
+               102: {NORTH: [105, False], SOUTH: [104, False], WEST: [103, False]},
+               103: {EAST: [101, False], NORTH: [104, False]},
+               104: {SOUTH: [101, False], WEST: [102, False]},
+               105: {NORTH: [101, False], WEST: [106, False]},
+               106: {NORTH: [107, False], SOUTH: [102, False]},
+               107: {EAST: [108, False], SOUTH: [101, False]}
                }
 
 # name, size, weight, value
@@ -103,13 +119,13 @@ OBJECT_LOCATIONS = {0: VOID_LOCATION,
                     8: 14,
                     9: 20,
                     10: 3,
-                    11: random.choice([0,1,2]),
+                    11: random.choice([0, 1, 2]),
                     12: 0,
                     }
-#OBJECT_LOCATIONS[2] = 0
-#OBJECT_LOCATIONS[3] = 0
 
 
+# OBJECT_LOCATIONS[2] = 0
+# OBJECT_LOCATIONS[3] = 0
 
 
 def objectsAtLocation(roomID):
@@ -125,6 +141,7 @@ def prtRoom(roomID):
     directions = CONNECTIONS.get(roomID)
     print(f"{name}\n{description}")
 
+
 def bag():
     totalSize = 0
     totalWeight = 0
@@ -136,7 +153,7 @@ def bag():
         totalWeight += weight
         totalValue += value
 
-    return totalSize,totalWeight,totalValue
+    return totalSize, totalWeight, totalValue
 
 
 totalSize, totalWeight, totalValue = bag()
@@ -144,6 +161,7 @@ SIZECAPACITY = 100
 WEIGHTCAPACITY = 100
 SPACE = SIZECAPACITY - totalSize
 WEIGHT = WEIGHTCAPACITY - totalWeight
+
 
 def use(objectID, currentRoomID):
     global FIRE
@@ -265,7 +283,8 @@ def inventory(currentRoomID):
                     print(f"{i + 1}) {name}: {size} unit(s) big, {weight} unit(s) heavy, worth £{value}")
 
                 totalSize, totalWeight, totalValue = bag()
-                print(f"Space Left: {SIZECAPACITY - totalSize}\nWeight Spare: {WEIGHTCAPACITY - totalWeight}\nTotal Value: £{totalValue}")
+                print(
+                    f"Space Left: {SIZECAPACITY - totalSize}\nWeight Spare: {WEIGHTCAPACITY - totalWeight}\nTotal Value: £{totalValue}")
                 x = input()
 
             else:
@@ -284,11 +303,11 @@ def objects(roomID):
             for i, k in enumerate(objects):
                 name, size, weight, value = OBJECTS[k]
                 print(f"{i + 1}) {name}")
-            print(f"{len(objects) +1}) Cancel")
+            print(f"{len(objects) + 1}) Cancel")
             ans = input("")
             try:
                 ans = int(ans)
-                if ans == len(objects) +1:
+                if ans == len(objects) + 1:
                     valid = True
 
                 else:
@@ -323,7 +342,6 @@ def move(roomID):
     if directions is not None and isLit is True or hasTorch is True:
         choices = list(directions.keys())
 
-
         valid = False
         while valid is False:
             print("Where would you like to go?")
@@ -334,12 +352,12 @@ def move(roomID):
                     print(f"{i + 1}) {k}: {name}")
                 elif isLocked is True:
                     print(f"{i + 1}) {k}: LOCKED")
-            print(f"{len(directions) +1}) Cancel")
+            print(f"{len(directions) + 1}) Cancel")
             ans = input("")
 
             try:
                 ans = int(ans)
-                if ans == len(directions) +1:
+                if ans == len(directions) + 1:
                     valid = True
 
                 else:
@@ -351,8 +369,7 @@ def move(roomID):
                         print("that is not the answer you are looking for")
             except:
                 print(f"{ans} is not a number please type the numbers not their answers")
-        if ans == len(directions) +1:
-
+        if ans == len(directions) + 1:
             return roomID
         chosenDirection = choices[ans - 1]
         destination, isLocked = directions[chosenDirection]
@@ -367,9 +384,11 @@ def move(roomID):
         x = input()
         return roomID
 
+
 def end():
     totalSize, totalWeight, totalValue = bag()
-    print(f'you sold the items you found in the house for {totalValue}')
+    print(f'you sold the items you found in the house for {totalValue}skulls')
+
 
 def main():
     currentRoomID = 0
@@ -411,9 +430,11 @@ def main():
         if currentRoomID == 0 and moves > 0:
             ans = int(input("do you want to leave the house?"))
             if ans == 1:
-                print("you left the house")
-
+                print(f'you left the house after {turns + 1} turns')
+                x = input()
                 break
         turns += 1
     end()
+
+
 main()
