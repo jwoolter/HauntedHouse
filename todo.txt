@@ -1,11 +1,11 @@
 
 
 
-
+- main menu
 - room descriptions
 -more "useless" objects (see obj 12)
+-drop add cancel
 
-- connect maxe to somewhere -- Garden/Cellar
 - more uses for items
 -- items unlock secrets
 --- chalice unlocks maze???

@@ -40,21 +40,22 @@ ROOMS = {0: ["PORCH", "you stand", True],
          24: ["DUNGEON", "scary", False],
          25: ["WINE CELLAR", "drink", False],
          26: ["CELL", "lock", False],
+         27: ["GARDEN", "grass", True],
 
-         101: ["Maze", "lost in a maze", True],
-         102: ["Maze", "lost in a maze", True],
-         103: ["Maze", "lost in a maze", True],
-         104: ["Maze", "lost in a maze", True],
-         105: ["Maze", "lost in a maze", True],
-         106: ["Maze", "lost in a maze", True],
-         107: ["Maze", "lost in a maze", True],
-         108: ["Maze", "you found the end", True],
+         101: ["MAZE", "lost in a maze", True],
+         102: ["MAZE", "lost in a maze", True],
+         103: ["MAZE", "lost in a maze", True],
+         104: ["MAZE", "lost in a maze", True],
+         105: ["MAZE", "lost in a maze", True],
+         106: ["MAZE", "lost in a maze", True],
+         107: ["MAZE", "lost in a maze", True],
+         108: ["MAZE", "you found the end", True],
 
          999: ["you win", "you win", True]}
 # direction, newLocation, isLocked?
-CONNECTIONS = {0: {NORTH: [1, False], DOWN: [101, False]},
+CONNECTIONS = {0: {NORTH: [1, False],},
                1: {NORTH: [6, False], EAST: [2, False], SOUTH: [0, False], WEST: [4, False]},
-               2: {NORTH: [3, False], WEST: [1, False]},
+               2: {NORTH: [3, False], WEST: [1, False], EAST: [27, True]},
                3: {SOUTH: [2, False], WEST: [5, True]},
                4: {EAST: [1, False]},
                5: {EAST: [3, False]},
@@ -78,13 +79,15 @@ CONNECTIONS = {0: {NORTH: [1, False], DOWN: [101, False]},
                24: {NORTH: [26, True], EAST: [23, True]},
                25: {EAST: [23, False]},
                26: {SOUTH: [24, True]},
+               27: {WEST: [2, True]},
                101: {NORTH: [105, False], EAST: [102, False], SOUTH: [104, False]},
                102: {NORTH: [105, False], SOUTH: [104, False], WEST: [103, False]},
                103: {EAST: [101, False], NORTH: [104, False]},
                104: {SOUTH: [101, False], WEST: [102, False]},
                105: {NORTH: [101, False], WEST: [106, False]},
                106: {NORTH: [107, False], SOUTH: [102, False]},
-               107: {EAST: [108, False], SOUTH: [101, False]}
+               107: {EAST: [108, False], SOUTH: [101, False]},
+               108: {SOUTH: [27, False]}
                }
 
 # name, size, weight, value
@@ -101,6 +104,14 @@ OBJECTS = {0: ["Lit Torch", 10, 2, 1],
            10: ["Matches", 1, 1, 1],
            11: ["random", 1, 1, 999],
            12: ["old chair", 100, 100, 0],
+           13: ["breadcrumbs", 1, 1, 0],
+           14: ["pebble", 1, 1, 0],
+           15: ["small statue", 1, 3, 2],
+           16: ["button", 1, 1, 1],
+           17: ["cufflink", 1, 1, 3],
+           18: ["bowl", 1, 1, 2],
+           19: ["Full Chalice", 5, 3, 50],
+           20: ["Golden Skull", 10, 13, 999]
 
            }
 
@@ -109,7 +120,7 @@ VOID_LOCATION = 2006
 
 OBJECT_LOCATIONS = {0: VOID_LOCATION,
 
-                    1: 11,
+                    1: INVENTORY_LOCATION,
                     2: 17,
                     3: 4,
                     4: 2,
@@ -121,6 +132,13 @@ OBJECT_LOCATIONS = {0: VOID_LOCATION,
                     10: 3,
                     11: random.choice([0, 1, 2]),
                     12: 0,
+                    13: random.choice([0, 1, 2, 3, 4, 5, 6]),
+                    14: random.choice([0, 1, 2, 3, 4, 5, 6]),
+                    15: random.choice([0, 1, 2, 3, 4, 5, 6]),
+                    16: random.choice([0, 1, 2, 3, 4, 5, 6]),
+                    17: random.choice([0, 1, 2, 3, 4, 5, 6]),
+                    18: random.choice([0, 1, 2, 3, 4, 5, 6]),
+                    19: VOID_LOCATION,
                     }
 
 
@@ -184,6 +202,24 @@ def use(objectID, currentRoomID):
             print("the match lit your torch!")
             FIRE = 5
             success = True
+    elif name == "Chalice":
+        if currentRoomID == 27:
+            OBJECT_LOCATIONS[7] = VOID_LOCATION
+            OBJECT_LOCATIONS[19]= INVENTORY_LOCATION
+            print("you filled the chalice up in the fountain")
+            success = True
+    elif name == "Full Chalice":
+        if currentRoomID == 27:
+            currentEntry = CONNECTIONS[27]
+            currentEntry[NORTH] = [101, False]
+            OBJECT_LOCATIONS[19] = VOID_LOCATION
+            OBJECT_LOCATIONS[7] = INVENTORY_LOCATION
+            print("you drank the Full Chalice and a secret entrance to a maze appeared")
+            success = True
+
+
+
+
 
     if success is False:
         x = input()
@@ -402,7 +438,7 @@ def main():
             bag()
             if DEATH is True:
                 break
-            print(moves)
+
             ans = input("What would you like to do?\n1) Move\n2) Objects\n3) Bag\n")
             try:
                 ans = int(ans)
@@ -428,9 +464,9 @@ def main():
                 valid = True
                 inventory(currentRoomID)
         if currentRoomID == 0 and moves > 0:
-            ans = int(input("do you want to leave the house?"))
-            if ans == 1:
-                print(f'you left the house after {turns + 1} turns')
+            ans = input("do you want to leave the house?")
+            if ans.lower() == "y":
+                print(f'you left the house after {(turns + 1)/2} hours ')
                 x = input()
                 break
         turns += 1
