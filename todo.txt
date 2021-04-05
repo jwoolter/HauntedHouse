@@ -10,3 +10,4 @@
 -- items unlock secrets
 --- chalice unlocks maze???
 - random object locations using choice (see obj 11)
+- end if you toast you can't sell

@@ -72,7 +72,7 @@ CONNECTIONS = {0: {NORTH: [1, False],},
                17: {EAST: [15, False]},
                18: {EAST: [16, False]},
                19: {SOUTH: [20, False], DOWN: [14, False]},
-               20: {NORTH: [19, False], WEST: [21, True]},
+               20: {NORTH: [19, False]},
                21: {DOWN: [26, False]},
                22: {SOUTH: [23, False], UP: [6, False]},
                23: {NORTH: [22, False], EAST: [25, False], WEST: [24, True]},
@@ -111,7 +111,8 @@ OBJECTS = {0: ["Lit Torch", 10, 2, 1],
            17: ["cufflink", 1, 1, 3],
            18: ["bowl", 1, 1, 2],
            19: ["Full Chalice", 5, 3, 50],
-           20: ["Golden Skull", 10, 13, 999]
+           20: ["Golden Skull", 10, 13, 999],
+           21: ["Feather Duster", 7, 2, 3],
 
            }
 
@@ -139,6 +140,8 @@ OBJECT_LOCATIONS = {0: VOID_LOCATION,
                     17: random.choice([0, 1, 2, 3, 4, 5, 6]),
                     18: random.choice([0, 1, 2, 3, 4, 5, 6]),
                     19: VOID_LOCATION,
+                    20: 108,
+                    21: INVENTORY_LOCATION,
                     }
 
 
@@ -187,6 +190,7 @@ def use(objectID, currentRoomID):
     success = False
     name, size, weight, value = OBJECTS[objectID]
     print(f"you try to use {name}")
+    x=input()
 
     if name == "UnLit Torch":
         print("you wave an un lit torch")
@@ -216,7 +220,12 @@ def use(objectID, currentRoomID):
             OBJECT_LOCATIONS[7] = INVENTORY_LOCATION
             print("you drank the Full Chalice and a secret entrance to a maze appeared")
             success = True
-
+    elif name == "Feather Duster":
+        if currentRoomID == 20:
+            currentEntry = CONNECTIONS[20]
+            currentEntry[WEST] = [21, False]
+            print("you dusted the attic and uncovered a trapdoor!")
+            success = True
 
 
 
