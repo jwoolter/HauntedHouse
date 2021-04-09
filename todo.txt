@@ -9,5 +9,11 @@
 - more uses for items
 -- items unlock secrets
 --- chalice unlocks maze???
+----multiple water sources
+-----Kitchen
+-----Bathroom
+-----Garden
+--- duster unlocks cellar
+--- wine chalice unlocks something?
+---- crypt or something - maybe under cell(I could add some lore)
 - random object locations using choice (see obj 11)
-- end if you toast you can't sell

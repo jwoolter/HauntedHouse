@@ -113,6 +113,7 @@ OBJECTS = {0: ["Lit Torch", 10, 2, 1],
            19: ["Full Chalice", 5, 3, 50],
            20: ["Golden Skull", 10, 13, 999],
            21: ["Feather Duster", 7, 2, 3],
+           22: ["Wine Filled Chalice", 5, 3, 50],
 
            }
 
@@ -206,20 +207,29 @@ def use(objectID, currentRoomID):
             print("the match lit your torch!")
             FIRE = 5
             success = True
+
     elif name == "Chalice":
-        if currentRoomID == 27:
+        if currentRoomID == 27 or currentRoomID == 3 or currentRoomID == 12:
             OBJECT_LOCATIONS[7] = VOID_LOCATION
             OBJECT_LOCATIONS[19]= INVENTORY_LOCATION
-            print("you filled the chalice up in the fountain")
+            print("you filled the chalice up with water half way")
             success = True
+        elif currentRoomID == 25:
+            OBJECT_LOCATIONS[7] = VOID_LOCATION
+            OBJECT_LOCATIONS[22] = INVENTORY_LOCATION
     elif name == "Full Chalice":
-        if currentRoomID == 27:
-            currentEntry = CONNECTIONS[27]
-            currentEntry[NORTH] = [101, False]
-            OBJECT_LOCATIONS[19] = VOID_LOCATION
-            OBJECT_LOCATIONS[7] = INVENTORY_LOCATION
-            print("you drank the Full Chalice and a secret entrance to a maze appeared")
-            success = True
+
+        currentEntry = CONNECTIONS[27]
+        currentEntry[NORTH] = [101, False]
+        OBJECT_LOCATIONS[19] = VOID_LOCATION
+        OBJECT_LOCATIONS[7] = INVENTORY_LOCATION
+        print("you drank the Full Chalice and a secret entrance to a maze appeared")
+        success = True
+    elif name == "Wine Filled Chalice":
+        OBJECT_LOCATIONS[7] = VOID_LOCATION
+        OBJECT_LOCATIONS[19] = INVENTORY_LOCATION
+        print("you drink the wine from the chalice")
+        print("you hear a loud creak from the top of the house")
     elif name == "Feather Duster":
         if currentRoomID == 20:
             currentEntry = CONNECTIONS[20]
@@ -432,7 +442,8 @@ def move(roomID):
 
 def end():
     totalSize, totalWeight, totalValue = bag()
-    print(f'you sold the items you found in the house for {totalValue}skulls')
+    print(f'you sold the items you found in the house for {totalValue} skulls')
+
 
 
 def main():
@@ -477,9 +488,10 @@ def main():
             if ans.lower() == "y":
                 print(f'you left the house after {(turns + 1)/2} hours ')
                 x = input()
-                break
+                end()
+
         turns += 1
-    end()
+
 
 
 main()
