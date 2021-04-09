@@ -8,7 +8,7 @@ UP = "UP"
 DOWN = "DOWN"
 NORTHWEST = "NORTH WEST"
 
-DONE_ALREADY = ()
+DONE_ALREADY = set()
 FIRE = 0
 DEATH = False
 
@@ -189,7 +189,7 @@ WEIGHT = WEIGHTCAPACITY - totalWeight
 
 def use(objectID, currentRoomID):
     global FIRE
-    use_key = f"{objectID}:{currentRoomID}"
+    use_key = (objectID,currentRoomID)
     isDone = use_key in DONE_ALREADY
     inventory = objectsAtLocation(INVENTORY_LOCATION)
     success = False
@@ -452,6 +452,19 @@ def move(roomID):
 def end():
     totalSize, totalWeight, totalValue = bag()
     print(f'you sold the items you found in the house for {totalValue} skulls')
+    print("puzzles completed")
+    if len(DONE_ALREADY) > 0:
+
+        for i, v in enumerate(DONE_ALREADY):
+            o, r = v
+            Oname, size, weight, value = OBJECTS[o]
+            Rname, description, isLit = ROOMS[r]
+            print(f"{i+1}: you used {Oname}, in {Rname}")
+
+
+
+    else:
+        print("none")
 
 
 
@@ -498,6 +511,7 @@ def main():
                 print(f'you left the house after {(turns + 1)/2} hours ')
                 x = input()
                 end()
+                break
 
         turns += 1
 

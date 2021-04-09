@@ -19,3 +19,4 @@
 - random object locations using choice (see obj 11)
 
 - Dad's weird list thingy
+- adding articles to the objects (a, the etc.)
