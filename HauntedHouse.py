@@ -8,6 +8,7 @@ UP = "UP"
 DOWN = "DOWN"
 NORTHWEST = "NORTH WEST"
 
+DONE_ALREADY = ()
 FIRE = 0
 DEATH = False
 
@@ -114,6 +115,7 @@ OBJECTS = {0: ["Lit Torch", 10, 2, 1],
            20: ["Golden Skull", 10, 13, 999],
            21: ["Feather Duster", 7, 2, 3],
            22: ["Wine Filled Chalice", 5, 3, 50],
+           23: ["Half Filled Chalice", 5, 3, 50],
 
            }
 
@@ -187,6 +189,8 @@ WEIGHT = WEIGHTCAPACITY - totalWeight
 
 def use(objectID, currentRoomID):
     global FIRE
+    use_key = f"{objectID}:{currentRoomID}"
+    isDone = use_key in DONE_ALREADY
     inventory = objectsAtLocation(INVENTORY_LOCATION)
     success = False
     name, size, weight, value = OBJECTS[objectID]
@@ -209,14 +213,17 @@ def use(objectID, currentRoomID):
             success = True
 
     elif name == "Chalice":
-        if currentRoomID == 27 or currentRoomID == 3 or currentRoomID == 12:
+        if currentRoomID in [27, 3, 12]:
             OBJECT_LOCATIONS[7] = VOID_LOCATION
-            OBJECT_LOCATIONS[19]= INVENTORY_LOCATION
+            OBJECT_LOCATIONS[23]= INVENTORY_LOCATION
             print("you filled the chalice up with water half way")
             success = True
         elif currentRoomID == 25:
             OBJECT_LOCATIONS[7] = VOID_LOCATION
             OBJECT_LOCATIONS[22] = INVENTORY_LOCATION
+    elif name == "Half Filled Chalice":
+        OBJECT_LOCATIONS[22] = VOID_LOCATION
+        OBJECT_LOCATIONS[19] = INVENTORY_LOCATION
     elif name == "Full Chalice":
 
         currentEntry = CONNECTIONS[27]
@@ -230,12 +237,12 @@ def use(objectID, currentRoomID):
         OBJECT_LOCATIONS[19] = INVENTORY_LOCATION
         print("you drink the wine from the chalice")
         print("you hear a loud creak from the top of the house")
-    elif name == "Feather Duster":
-        if currentRoomID == 20:
-            currentEntry = CONNECTIONS[20]
-            currentEntry[WEST] = [21, False]
-            print("you dusted the attic and uncovered a trapdoor!")
-            success = True
+    elif name == "Feather Duster" and currentRoomID == 20 and isDone is False:
+
+        currentEntry = CONNECTIONS[20]
+        currentEntry[WEST] = [21, False]
+        print("you dusted the attic and uncovered a trapdoor!")
+        success = True
 
 
 
@@ -243,6 +250,8 @@ def use(objectID, currentRoomID):
     if success is False:
         x = input()
         print("nothing happend")
+    else:
+        DONE_ALREADY.add(use_key)
 
 
 def fire(currentRoomID):
